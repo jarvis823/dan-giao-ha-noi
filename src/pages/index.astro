@@ -2,48 +2,100 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import ProductCard from '../components/ProductCard.astro';
+import { SITE_DESCRIPTION, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const products = (await getCollection('products')).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body>
+	<body class="bg-background text-on-background font-body-md font-sans overflow-x-hidden">
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<!-- Hero Section -->
+			<section
+				class="relative bg-surface-variant min-h-[480px] md:min-h-[819px] flex items-center justify-center border-b border-outline-variant overflow-hidden"
+			>
+				<div
+					class="absolute inset-0 z-0 opacity-20 bg-cover bg-center"
+					style="background-image: url('/blog-placeholder-1.jpg')"
+				>
+				</div>
+				<div class="relative z-10 w-[90%] max-w-container-max mx-auto py-xl text-center flex flex-col items-center">
+					<h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-primary max-w-4xl mb-lg">
+						{SITE_TITLE.toUpperCase()} - NỀN TẢNG VỮNG CHẮC CHO MỌI CÔNG TRÌNH
+					</h1>
+					<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-xl">
+						Đơn vị chuyên Mua bán &amp; Cho thuê các thiết bị hỗ trợ xây dựng uy tín, chất lượng hàng đầu tại Hà Nội.
+					</p>
+					<div class="flex flex-col sm:flex-row gap-md">
+						<a
+							href="/san-pham/"
+							class="cta-outline font-label-bold text-label-bold px-xl py-md rounded uppercase tracking-wider transition-colors"
+						>
+							Xem Báo Giá
+						</a>
+						<a
+							href={`tel:${SITE_PHONE_TEL}`}
+							class="cta-primary font-label-bold text-label-bold px-xl py-md rounded uppercase tracking-wider flex items-center justify-center gap-sm transition-colors"
+						>
+							<span class="material-symbols-outlined">phone_in_talk</span>
+							Gọi: {SITE_PHONE_DISPLAY}
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- About Section -->
+			<section class="py-[96px] bg-background">
+				<div class="w-[90%] max-w-container-max mx-auto">
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
+						<div class="order-2 md:order-1 relative rounded-lg overflow-hidden border border-outline-variant h-[260px] sm:h-[320px] md:h-[400px]">
+							<img class="w-full h-full object-cover" src="/blog-placeholder-about.jpg" alt="Kho bãi Dàn Giáo Hà Nội" />
+						</div>
+						<div class="order-1 md:order-2 flex flex-col justify-center">
+							<div class="flex items-center gap-sm mb-sm">
+								<span class="w-8 h-[2px] bg-secondary"></span>
+								<span class="font-label-bold text-label-bold text-secondary uppercase">Về {SITE_TITLE}</span>
+							</div>
+							<h2 class="font-headline-lg text-headline-lg text-primary mb-md">Đối Tác Tin Cậy Của Mọi Nhà Thầu</h2>
+							<p class="font-body-lg text-body-lg text-on-surface-variant">
+								Tọa lạc tại trung tâm vật liệu xây dựng Đống Đa, {SITE_TITLE} tự hào là đối tác tin cậy của hàng
+								trăm nhà thầu và công trình lớn nhỏ. Chúng tôi cung cấp giải pháp toàn diện về thiết bị chống đỡ,
+								đảm bảo an toàn tuyệt đối và tiến độ thi công cho dự án của bạn với chi phí tối ưu nhất.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Products Section -->
+			<section class="py-[96px] bg-surface-container-lowest border-y border-outline-variant">
+				<div class="w-[90%] max-w-container-max mx-auto">
+					<div class="text-center mb-xl">
+						<h2 class="font-headline-lg text-headline-lg text-primary uppercase">Sản Phẩm &amp; Thiết Bị Cung Cấp</h2>
+						<p class="font-body-md text-body-md text-on-surface-variant mt-sm">
+							Đa dạng chuẩn loại, đáp ứng mọi yêu cầu kỹ thuật khắt khe nhất.
+						</p>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+						{products.map((product) => <ProductCard product={product} />)}
+					</div>
+					<div class="text-center mt-xl">
+						<a
+							href="/san-pham/"
+							class="cta-secondary font-label-bold text-label-bold px-xl py-md rounded uppercase tracking-wider inline-block transition-colors"
+						>
+							Xem Tất Cả Sản Phẩm
+						</a>
+					</div>
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>

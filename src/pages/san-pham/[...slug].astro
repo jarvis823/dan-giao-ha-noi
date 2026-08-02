@@ -1,0 +1,24 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import ProductDetail from '../../layouts/ProductDetail.astro';
+
+export async function getStaticPaths() {
+	const products = await getCollection('products');
+	return products.map((product) => ({
+		params: { slug: product.id },
+		props: {
+			product,
+			related: products.filter((p) => p.data.category === product.data.category && p.id !== product.id).slice(0, 4),
+		},
+	}));
+}
+
+type Props = { product: CollectionEntry<'products'>; related: CollectionEntry<'products'>[] };
+
+const { product, related } = Astro.props;
+const { Content } = await render(product);
+---
+
+<ProductDetail product={product} related={related}>
+	<Content />
+</ProductDetail>

@@ -1,0 +1,199 @@
+---
+import { getImage, Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+
+interface Props {
+	product: CollectionEntry<'products'>;
+	related: CollectionEntry<'products'>[];
+}
+
+const { product, related } = Astro.props;
+const { name, category, sku, price, specs, images } = product.data;
+
+// Pre-render every gallery image at a single fixed display size at build time
+// so the thumbnail-click swap only ever points at already-optimized static URLs
+// (no runtime/on-demand image transforms, keeping the build fully static).
+const galleryImages = await Promise.all(images.map((img) => getImage({ src: img, width: 800, height: 600 })));
+---
+
+<html lang="vi">
+	<head>
+		<BaseHead title={`${name} - ${SITE_TITLE}`} description={product.data.shortDescription} image={images[0].src} />
+	</head>
+	<body class="bg-surface text-on-surface font-body-md font-sans">
+		<Header />
+		<main class="w-[90%] max-w-container-max mx-auto py-xl">
+			<nav class="flex items-center gap-xs text-on-surface-variant font-label-bold mb-md flex-wrap">
+				<a class="text-on-surface-variant hover:text-primary transition-colors" href="/">Trang chủ</a>
+				<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+				<a class="text-on-surface-variant hover:text-primary transition-colors" href="/san-pham/">Sản phẩm</a>
+				<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+				<span class="text-primary font-bold">{name}</span>
+			</nav>
+
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl mb-xl items-start">
+				<div id="product-gallery" class="lg:col-span-7 grid grid-cols-4 lg:grid-cols-6 gap-md">
+					<div class="col-span-4 lg:col-span-6 aspect-[4/3] bg-white flat-technical-border overflow-hidden">
+						<img
+							data-gallery-main
+							src={galleryImages[0].src}
+							alt={name}
+							width="800"
+							height="600"
+							class="w-full h-full object-cover"
+						/>
+					</div>
+					{
+						galleryImages.length > 1 &&
+							galleryImages.slice(1).map((img) => (
+								<button
+									type="button"
+									data-gallery-thumb
+									data-src={img.src}
+									data-alt={name}
+									class="col-span-1 aspect-square bg-white flat-technical-border cursor-pointer hover:border-secondary transition-all p-0"
+								>
+									<img src={img.src} alt={name} width="200" height="200" class="w-full h-full object-cover" />
+								</button>
+							))
+					}
+				</div>
+
+				<div class="lg:col-span-5 flex flex-col gap-md">
+					<div class="space-y-xs">
+						<span
+							class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-xs text-label-sm font-bold uppercase tracking-wider inline-block"
+						>
+							{category}
+						</span>
+						<h1 class="font-display-lg text-headline-lg lg:text-display-lg text-primary leading-tight">{name}</h1>
+						{sku && <p class="text-on-surface-variant font-label-bold">SKU: {sku}</p>}
+					</div>
+					<div class="py-md border-y border-outline-variant">
+						<div class="text-secondary font-headline-lg text-headline-lg">{price ?? 'Liên hệ báo giá tốt nhất'}</div>
+						<p class="text-on-surface-variant text-body-md mt-xs">Hỗ trợ vận chuyển tận công trình toàn quốc.</p>
+					</div>
+					<div class="flex flex-col gap-sm">
+						<a
+							class="w-full cta-primary py-md px-lg text-headline-md font-bold text-center rounded-lg hover:opacity-90 shadow-sm flex items-center justify-center gap-md transition-all active:scale-[0.98]"
+							href={`tel:${SITE_PHONE_TEL}`}
+						>
+							<span class="material-symbols-outlined">call</span>
+							Gọi {SITE_PHONE_DISPLAY}
+						</a>
+					</div>
+					<div class="grid grid-cols-2 gap-md">
+						<div class="p-md bg-surface-container flat-technical-border rounded-lg flex items-center gap-sm">
+							<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;"
+								>verified</span
+							>
+							<span class="text-label-bold">Chứng nhận ISO</span>
+						</div>
+						<div class="p-md bg-surface-container flat-technical-border rounded-lg flex items-center gap-sm">
+							<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+							<span class="text-label-bold">Sẵn hàng 24/7</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<section class="mt-xl grid grid-cols-1 lg:grid-cols-12 gap-xl">
+				<div class="lg:col-span-8 space-y-lg">
+					{
+						specs && specs.length > 0 && (
+							<div class="overflow-x-auto">
+								<table class="w-full zebra-table border-collapse text-left">
+									<thead>
+										<tr class="bg-primary text-on-primary">
+											<th class="p-md font-label-bold border-r border-on-primary/10">Đặc tính kỹ thuật</th>
+											<th class="p-md font-label-bold">Chi tiết thông số</th>
+										</tr>
+									</thead>
+									<tbody class="text-on-surface border-x border-b border-outline-variant">
+										{specs.map((spec) => (
+											<tr>
+												<td class="p-md font-bold border-r border-outline-variant">{spec.label}</td>
+												<td class="p-md">{spec.value}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						)
+					}
+					<div class="prose max-w-none text-on-surface-variant">
+						<slot />
+					</div>
+				</div>
+
+				<div class="lg:col-span-4 space-y-md">
+					<div class="bg-surface-container-high p-lg rounded-lg border border-outline-variant">
+						<h4 class="font-headline-md text-headline-md text-primary mb-md">Tại sao chọn chúng tôi?</h4>
+						<div class="space-y-md">
+							<div class="flex gap-md">
+								<span class="material-symbols-outlined text-secondary">security</span>
+								<div>
+									<div class="font-label-bold">Chất lượng kiểm định</div>
+									<div class="text-label-sm">Sản phẩm được thử tải định kỳ, đảm bảo an toàn tuyệt đối.</div>
+								</div>
+							</div>
+							<div class="flex gap-md">
+								<span class="material-symbols-outlined text-secondary">local_shipping</span>
+								<div>
+									<div class="font-label-bold">Giao hàng thần tốc</div>
+									<div class="text-label-sm">Đội xe chuyên dụng đáp ứng nhu cầu giao hàng trong ngày.</div>
+								</div>
+							</div>
+							<div class="flex gap-md">
+								<span class="material-symbols-outlined text-secondary">handshake</span>
+								<div>
+									<div class="font-label-bold">Giá xưởng tốt nhất</div>
+									<div class="text-label-sm">Không qua trung gian, tối ưu hóa chi phí cho khách hàng.</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{
+				related.length > 0 && (
+					<section class="mt-xl">
+						<h2 class="font-headline-lg text-headline-lg text-primary mb-xl border-l-4 border-secondary pl-md">
+							Sản phẩm liên quan
+						</h2>
+						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+							{related.map((item) => (
+								<ProductCard product={item} />
+							))}
+						</div>
+					</section>
+				)
+			}
+		</main>
+		<Footer />
+
+		<script>
+			const gallery = document.getElementById('product-gallery');
+			const mainImg = gallery?.querySelector<HTMLImageElement>('[data-gallery-main]');
+			const thumbs = gallery?.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]');
+
+			thumbs?.forEach((thumb) => {
+				thumb.addEventListener('click', () => {
+					if (!mainImg) return;
+					const src = thumb.dataset.src;
+					const alt = thumb.dataset.alt;
+					if (src) mainImg.src = src;
+					if (alt) mainImg.alt = alt;
+					thumbs.forEach((t) => t.classList.remove('border-secondary'));
+					thumb.classList.add('border-secondary');
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	product: CollectionEntry<'products'>;
+}
+
+const { product } = Astro.props;
+const { name, shortDescription, badge, images } = product.data;
+---
+
+<div
+	class="bg-surface-container-lowest border border-outline-variant rounded hover:shadow-[0px_2px_4px_rgba(0,0,0,0.05)] transition-shadow group flex flex-col font-sans"
+>
+	<div class="h-48 border-b border-outline-variant overflow-hidden relative">
+		<Image
+			src={images[0]}
+			alt={name}
+			class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+			width={400}
+			height={300}
+		/>
+		{
+			badge && (
+				<div class="absolute top-sm right-sm bg-primary-container text-on-primary-container font-label-sm text-label-sm px-sm py-xs rounded-sm font-bold uppercase border border-primary-container">
+					{badge}
+				</div>
+			)
+		}
+	</div>
+	<div class="p-md flex-1 flex flex-col">
+		<h3 class="font-headline-md text-[20px] font-semibold text-primary mb-sm">{name}</h3>
+		<p class="font-body-md text-body-md text-on-surface-variant mb-md flex-1">{shortDescription}</p>
+		<a href={`/san-pham/${product.id}/`} class="cta-outline font-label-bold text-label-bold w-full py-[10px] rounded mt-auto text-center">
+			Xem Chi Tiết
+		</a>
+	</div>
+</div>
