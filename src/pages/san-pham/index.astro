@@ -8,7 +8,7 @@ import { getCollection } from 'astro:content';
 
 const products = (await getCollection('products')).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 const pageTitle = `Sản phẩm - ${SITE_TITLE}`;
-const pageDescription = 'Toàn bộ dàn giáo, cây chống và phụ kiện xây dựng đang cung cấp tại Dàn Giáo Hà Nội.';
+const pageDescription = 'Toàn bộ giàn giáo, cây chống và phụ kiện xây dựng đang cung cấp tại giàn giáo Hà Nội.';
 ---
 
 <!doctype html>
