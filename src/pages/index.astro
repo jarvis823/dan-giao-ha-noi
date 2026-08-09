@@ -5,8 +5,13 @@ import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { SITE_DESCRIPTION, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
+import { getImage, Image } from 'astro:assets';
+import aboutImage from '../assets/products/about-82.jpeg';
+import heroBackground from '../assets/products/back-ground-xay-dung.png';
 
 const products = (await getCollection('products')).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+// Hero background is a CSS `background-image`, so it needs an optimized URL rather than an <Image>.
+const heroBackgroundImage = await getImage({ src: heroBackground, width: 1920, format: 'webp' });
 ---
 
 <!doctype html>
@@ -23,7 +28,7 @@ const products = (await getCollection('products')).sort((a, b) => (a.data.order 
 			>
 				<div
 					class="absolute inset-0 z-0 opacity-20 bg-cover bg-center"
-					style="background-image: url('/blog-placeholder-1.jpg')"
+					style={`background-image: url('${heroBackgroundImage.src}')`}
 				>
 				</div>
 				<div class="relative z-10 w-[90%] max-w-container-max mx-auto py-xl text-center flex flex-col items-center">
@@ -55,8 +60,17 @@ const products = (await getCollection('products')).sort((a, b) => (a.data.order 
 			<section class="py-[96px] bg-background">
 				<div class="w-[90%] max-w-container-max mx-auto">
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
-						<div class="order-2 md:order-1 relative rounded-lg overflow-hidden border border-outline-variant h-[260px] sm:h-[320px] md:h-[400px]">
-							<img class="w-full h-full object-cover" src="/blog-placeholder-about.jpg" alt="Kho bãi Dàn Giáo Hà Nội" />
+						<div
+							class="order-2 md:order-1 relative rounded-lg overflow-hidden border border-outline-variant mx-auto w-full max-w-[360px] md:max-w-[420px]"
+						>
+							<!-- Portrait photo: sized by its own aspect ratio so no part of it gets cropped. -->
+							<Image
+								class="w-full h-auto"
+								src={aboutImage}
+								alt="Kho bãi giàn giáo Hà Nội"
+								width={840}
+								height={1120}
+							/>
 						</div>
 						<div class="order-1 md:order-2 flex flex-col justify-center">
 							<div class="flex items-center gap-sm mb-sm">
