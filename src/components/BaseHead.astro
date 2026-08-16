@@ -5,6 +5,7 @@
 // overrides global.css's Bear-Blog typography used on /blog/*.
 import '../styles/tailwind.css';
 import '../styles/global.css';
+import { GA_MEASUREMENT_ID } from '../consts';
 
 interface Props {
 	title: string;
@@ -27,17 +28,33 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
 <link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
 
-<!-- Inter + Material Symbols (used by the Tailwind-based site chrome / product pages) -->
+<!-- Inter + Material Symbols (used by the Tailwind-based site chrome / product pages).
+     Loaded non-render-blocking: `media="print"` lets the browser fetch without
+     blocking first paint, then `onload` swaps to `all`. <noscript> covers no-JS. -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
 	href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
 	rel="stylesheet"
+	media="print"
+	onload="this.media='all'"
 />
 <link
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 	rel="stylesheet"
+	media="print"
+	onload="this.media='all'"
 />
+<noscript>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+		rel="stylesheet"
+	/>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+		rel="stylesheet"
+	/>
+</noscript>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -60,3 +77,25 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+<!-- Analytics (GA4). Only loads when GA_MEASUREMENT_ID is set in consts.ts. -->
+{
+	GA_MEASUREMENT_ID && (
+		<Fragment>
+			<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+			<script
+				is:inline
+				set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');`}
+			/>
+		</Fragment>
+	)
+}
+<!-- Fires a GA event for any clicked element carrying data-track (no-op without gtag). -->
+<script is:inline>
+	document.addEventListener('click', (e) => {
+		const el = (e.target instanceof Element ? e.target : null)?.closest('[data-track]');
+		if (el && typeof window.gtag === 'function') {
+			window.gtag('event', el.getAttribute('data-track'));
+		}
+	});
+</script>

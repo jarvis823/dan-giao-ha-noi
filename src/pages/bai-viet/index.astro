@@ -2,19 +2,22 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { SITE_TITLE } from '../../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const pageTitle = `Bài viết & kinh nghiệm - ${SITE_TITLE}`;
+const pageDescription =
+	'Hướng dẫn, kinh nghiệm chọn mua và thuê giàn giáo, cây chống, vật tư phụ trợ xây dựng cho nhà thầu và chủ nhà tại Hà Nội.';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={pageTitle} description={pageDescription} />
 		<style>
 			main {
 				width: 960px;
@@ -88,13 +91,14 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
+			<h1>Bài viết &amp; kinh nghiệm</h1>
 			<section>
 				<ul>
 					{
 						posts.map((post) => (
 							<li>
-								<a href={`/blog/${post.id}/`}>
-									<img width={720} height={360} src={post.data.heroImage} alt="" />
+								<a href={`/bai-viet/${post.id}/`}>
+									<img width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">
 										<FormattedDate date={post.data.pubDate} />

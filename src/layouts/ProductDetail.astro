@@ -5,7 +5,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE, SITE_ZALO_URL } from '../consts';
 
 interface Props {
 	product: CollectionEntry<'products'>;
@@ -19,11 +20,34 @@ const { name, category, sku, price, specs, images } = product.data;
 // so the thumbnail-click swap only ever points at already-optimized static URLs
 // (no runtime/on-demand image transforms, keeping the build fully static).
 const galleryImages = await Promise.all(images.map((img) => getImage({ src: img, width: 800, height: 600 })));
+
+const siteUrl = Astro.site?.href ?? Astro.url.origin + '/';
+const productSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Product',
+	name,
+	description: product.data.shortDescription,
+	category,
+	image: galleryImages.map((img) => new URL(img.src, siteUrl).href),
+	...(sku ? { sku } : {}),
+	brand: { '@type': 'Brand', name: SITE_TITLE },
+	// No `offers` block: prices are quote-on-request, so we avoid asserting a price.
+};
+const breadcrumbSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Trang chủ', item: siteUrl },
+		{ '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: new URL('/san-pham/', siteUrl).href },
+		{ '@type': 'ListItem', position: 3, name, item: new URL(Astro.url.pathname, siteUrl).href },
+	],
+};
 ---
 
 <html lang="vi">
 	<head>
 		<BaseHead title={`${name} - ${SITE_TITLE}`} description={product.data.shortDescription} image={images[0].src} />
+		<JsonLd schema={[productSchema, breadcrumbSchema]} />
 	</head>
 	<body class="bg-surface text-on-surface font-body-md font-sans">
 		<Header />
@@ -75,16 +99,35 @@ const galleryImages = await Promise.all(images.map((img) => getImage({ src: img,
 						{sku && <p class="text-on-surface-variant font-label-bold">SKU: {sku}</p>}
 					</div>
 					<div class="py-md border-y border-outline-variant">
+						<div class="flex flex-wrap gap-xs mb-sm">
+							<span class="bg-secondary-container text-on-secondary-container px-sm py-xs text-label-sm font-bold rounded-sm inline-flex items-center gap-xs">
+								<span class="material-symbols-outlined text-[16px]">sell</span> Bán
+							</span>
+							<span class="bg-secondary-container text-on-secondary-container px-sm py-xs text-label-sm font-bold rounded-sm inline-flex items-center gap-xs">
+								<span class="material-symbols-outlined text-[16px]">calendar_month</span> Cho thuê
+							</span>
+						</div>
 						<div class="text-secondary font-headline-lg text-headline-lg">{price ?? 'Liên hệ báo giá tốt nhất'}</div>
-						<p class="text-on-surface-variant text-body-md mt-xs">Hỗ trợ vận chuyển tận công trình toàn quốc.</p>
+						<p class="text-on-surface-variant text-body-md mt-xs">Có bán và cho thuê theo ngày/tháng. Hỗ trợ vận chuyển tận công trình.</p>
 					</div>
 					<div class="flex flex-col gap-sm">
 						<a
 							class="w-full cta-primary py-md px-lg text-headline-md font-bold text-center rounded-lg hover:opacity-90 shadow-sm flex items-center justify-center gap-md transition-all active:scale-[0.98]"
 							href={`tel:${SITE_PHONE_TEL}`}
+							data-track="click_phone"
 						>
 							<span class="material-symbols-outlined">call</span>
 							Gọi {SITE_PHONE_DISPLAY}
+						</a>
+						<a
+							class="w-full py-md px-lg text-headline-md font-bold text-center rounded-lg text-white bg-[#0068ff] hover:opacity-90 shadow-sm flex items-center justify-center gap-md transition-all active:scale-[0.98]"
+							href={SITE_ZALO_URL}
+							target="_blank"
+							rel="noopener"
+							data-track="click_zalo"
+						>
+							<span class="material-symbols-outlined">chat</span>
+							Nhắn Zalo báo giá
 						</a>
 					</div>
 					<div class="grid grid-cols-2 gap-md">

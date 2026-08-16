@@ -1,5 +1,5 @@
 ---
-import { NAV_LINKS, SITE_ADDRESS, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+import { NAV_LINKS, SITE_ADDRESS, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE, SITE_ZALO_URL } from '../consts';
 
 const today = new Date();
 const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(SITE_ADDRESS)}&output=embed`;
@@ -70,8 +70,20 @@ const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(SITE_ADD
 
 <div class="fixed bottom-lg right-lg flex flex-col gap-sm z-50">
 	<a
+		class="w-12 h-12 rounded-full bg-[#0068ff] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+		href={SITE_ZALO_URL}
+		target="_blank"
+		rel="noopener"
+		data-track="click_zalo"
+		aria-label="Chat Zalo"
+	>
+		<span class="material-symbols-outlined">chat</span>
+	</a>
+	<a
 		class="w-12 h-12 rounded-full cta-primary flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
 		href={`tel:${SITE_PHONE_TEL}`}
+		data-track="click_phone"
+		aria-label={`Gọi ${SITE_PHONE_DISPLAY}`}
 	>
 		<span class="material-symbols-outlined text-on-primary">call</span>
 	</a>

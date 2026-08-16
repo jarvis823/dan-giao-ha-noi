@@ -1,0 +1,64 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import { SITE_ADDRESS, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+import aboutImage from '../assets/products/about-82.jpeg';
+
+const pageTitle = `Giới thiệu - ${SITE_TITLE}`;
+const pageDescription = `${SITE_TITLE} chuyên mua bán và cho thuê giàn giáo, cây chống, vật tư phụ trợ xây dựng tại Hà Nội. Địa chỉ ${SITE_ADDRESS}.`;
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} image={aboutImage.src} />
+	</head>
+	<body class="bg-surface text-on-surface font-body-md font-sans">
+		<Header />
+		<main class="w-[90%] max-w-container-max mx-auto py-xl">
+			<div class="text-center mb-xl">
+				<h1 class="font-headline-lg text-headline-lg text-primary uppercase">Về {SITE_TITLE}</h1>
+				<p class="font-body-md text-body-md text-on-surface-variant mt-sm max-w-2xl mx-auto">
+					Đối tác vật tư phụ trợ xây dựng uy tín của các nhà thầu và chủ nhà tại Hà Nội và các tỉnh lân cận.
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-center mb-xl">
+				<div class="aspect-[4/3] bg-white flat-technical-border overflow-hidden">
+					<Image src={aboutImage} alt={`Kho vật tư ${SITE_TITLE} tại ${SITE_ADDRESS}`} width={800} height={600} class="w-full h-full object-cover" />
+				</div>
+				<div class="space-y-md text-on-surface-variant">
+					<p>
+						{SITE_TITLE} là đơn vị chuyên <strong>mua bán và cho thuê</strong> giàn giáo, cây chống, mâm giáo, ván phủ phim và các vật tư phụ trợ xây dựng. Chúng tôi phục vụ cả công trình dân dụng nhỏ lẫn công trình quy mô lớn của nhà thầu.
+					</p>
+					<p>
+						Toàn bộ sản phẩm được kiểm định tải trọng định kỳ, đảm bảo an toàn khi thi công. Đội xe chuyên dụng hỗ trợ <strong>giao và thu hồi vật tư tận công trình</strong> trong ngày.
+					</p>
+					<ul class="space-y-sm">
+						<li class="flex items-center gap-sm"><span class="material-symbols-outlined text-secondary">check_circle</span> Bán và cho thuê linh hoạt theo ngày, tháng hoặc công trình.</li>
+						<li class="flex items-center gap-sm"><span class="material-symbols-outlined text-secondary">check_circle</span> Tư vấn số lượng vật tư miễn phí theo bản vẽ.</li>
+						<li class="flex items-center gap-sm"><span class="material-symbols-outlined text-secondary">check_circle</span> Giá tận xưởng, không qua trung gian.</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="bg-surface-container p-lg rounded-lg flat-technical-border grid grid-cols-1 sm:grid-cols-3 gap-md text-center">
+				<div>
+					<div class="font-headline-md text-primary">Địa chỉ</div>
+					<div class="text-on-surface-variant text-body-md">{SITE_ADDRESS}</div>
+				</div>
+				<div>
+					<div class="font-headline-md text-primary">Hotline</div>
+					<a href={`tel:${SITE_PHONE_TEL}`} data-track="click_phone" class="text-secondary font-bold">{SITE_PHONE_DISPLAY}</a>
+				</div>
+				<div>
+					<div class="font-headline-md text-primary">Phục vụ</div>
+					<div class="text-on-surface-variant text-body-md">Hà Nội & các tỉnh lân cận</div>
+				</div>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
