@@ -1,0 +1,98 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+
+const pageTitle = `Câu hỏi thường gặp - ${SITE_TITLE}`;
+const pageDescription =
+	'Giải đáp các câu hỏi thường gặp về mua bán, cho thuê giàn giáo, cây chống: giá, giao hàng, đặt cọc, số lượng tối thiểu.';
+
+// Single source of truth: the visible accordion and the FAQPage schema are
+// both generated from this list, so structured data always matches the page.
+const faqs = [
+	{
+		q: 'Bên mình có cả bán và cho thuê giàn giáo không?',
+		a: 'Có. Chúng tôi cung cấp cả hình thức bán và cho thuê giàn giáo, cây chống, mâm giáo và các vật tư phụ trợ. Bạn có thể chọn phương án phù hợp với thời gian và quy mô công trình.',
+	},
+	{
+		q: 'Có giao hàng đến công trình không?',
+		a: 'Có. Chúng tôi có đội xe chuyên dụng giao và thu hồi vật tư tận công trình tại Hà Nội và các tỉnh lân cận, hỗ trợ giao trong ngày với đơn hàng sẵn kho.',
+	},
+	{
+		q: 'Thuê giàn giáo có cần đặt cọc không?',
+		a: 'Với hình thức thuê thường cần đặt cọc theo giá trị vật tư và thời gian thuê. Mức cọc cụ thể sẽ được thông báo khi báo giá, và hoàn lại khi thu hồi đủ vật tư.',
+	},
+	{
+		q: 'Giá được tính theo bộ, theo ngày hay theo tháng?',
+		a: 'Giá bán tính theo bộ hoặc theo cây/tấm tùy sản phẩm. Giá thuê tính theo ngày, theo tháng hoặc trọn công trình. Liên hệ hotline để nhận báo giá chính xác theo nhu cầu.',
+	},
+	{
+		q: 'Số lượng tối thiểu để đặt hàng là bao nhiêu?',
+		a: 'Chúng tôi phục vụ cả công trình nhỏ lẫn đơn số lượng lớn. Với đơn nhỏ vẫn hỗ trợ giao hàng; vui lòng gọi để được tư vấn theo từng trường hợp cụ thể.',
+	},
+	{
+		q: 'Có hỗ trợ tư vấn số lượng vật tư không?',
+		a: 'Có. Bạn gửi diện tích mặt tường hoặc bản vẽ, đội kỹ thuật sẽ bóc tách và tư vấn số lượng giàn giáo, cây chống và phụ kiện cần thiết miễn phí.',
+	},
+];
+
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: faqs.map((f) => ({
+		'@type': 'Question',
+		name: f.q,
+		acceptedAnswer: { '@type': 'Answer', text: f.a },
+	})),
+};
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} />
+		<JsonLd schema={faqSchema} />
+	</head>
+	<body class="bg-surface text-on-surface font-body-md font-sans">
+		<Header />
+		<main class="w-[90%] max-w-container-max mx-auto py-xl">
+			<div class="text-center mb-xl">
+				<h1 class="font-headline-lg text-headline-lg text-primary uppercase">Câu hỏi thường gặp</h1>
+				<p class="font-body-md text-body-md text-on-surface-variant mt-sm max-w-2xl mx-auto">
+					Những thắc mắc phổ biến về mua bán và cho thuê vật tư xây dựng.
+				</p>
+			</div>
+
+			<div class="max-w-3xl mx-auto space-y-md">
+				{
+					faqs.map((f) => (
+						<details class="bg-surface-container flat-technical-border rounded-lg p-md group">
+							<summary class="flex items-center justify-between cursor-pointer font-label-bold text-on-surface list-none">
+								{f.q}
+								<span class="material-symbols-outlined text-secondary transition-transform group-open:rotate-180">
+									expand_more
+								</span>
+							</summary>
+							<p class="mt-sm text-on-surface-variant text-body-md">{f.a}</p>
+						</details>
+					))
+				}
+			</div>
+
+			<div class="text-center mt-xl">
+				<p class="text-on-surface-variant mb-sm">Chưa tìm thấy câu trả lời bạn cần?</p>
+				<a
+					href={`tel:${SITE_PHONE_TEL}`}
+					data-track="click_phone"
+					class="cta-primary inline-flex items-center gap-sm px-lg py-md rounded-lg font-bold"
+				>
+					<span class="material-symbols-outlined">call</span>
+					Gọi {SITE_PHONE_DISPLAY}
+				</a>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

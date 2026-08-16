@@ -3,7 +3,16 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { SITE_DESCRIPTION, SITE_PHONE_DISPLAY, SITE_PHONE_TEL, SITE_TITLE } from '../consts';
+import JsonLd from '../components/JsonLd.astro';
+import {
+	SITE_ADDRESS,
+	SITE_AREA_SERVED,
+	SITE_DESCRIPTION,
+	SITE_PHONE_DISPLAY,
+	SITE_PHONE_INTL,
+	SITE_PHONE_TEL,
+	SITE_TITLE,
+} from '../consts';
 import { getCollection } from 'astro:content';
 import { getImage, Image } from 'astro:assets';
 import aboutImage from '../assets/products/about-82.jpeg';
@@ -12,12 +21,33 @@ import heroBackground from '../assets/products/back-ground-xay-dung.png';
 const products = (await getCollection('products')).sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 // Hero background is a CSS `background-image`, so it needs an optimized URL rather than an <Image>.
 const heroBackgroundImage = await getImage({ src: heroBackground, width: 1920, format: 'webp' });
+// Real storefront photo, reused as the social-share/OG image and the LocalBusiness image.
+const ogImage = await getImage({ src: aboutImage, width: 1200, height: 630, format: 'jpg' });
+
+const siteUrl = Astro.site?.href ?? Astro.url.origin + '/';
+const localBusinessSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'LocalBusiness',
+	name: SITE_TITLE,
+	description: SITE_DESCRIPTION,
+	url: siteUrl,
+	telephone: SITE_PHONE_INTL,
+	image: new URL(ogImage.src, siteUrl).href,
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: SITE_ADDRESS,
+		addressLocality: 'Hà Nội',
+		addressCountry: 'VN',
+	},
+	areaServed: SITE_AREA_SERVED,
+};
 ---
 
 <!doctype html>
 <html lang="vi">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} image={ogImage.src} />
+		<JsonLd schema={localBusinessSchema} />
 	</head>
 	<body class="bg-background text-on-background font-body-md font-sans overflow-x-hidden">
 		<Header />

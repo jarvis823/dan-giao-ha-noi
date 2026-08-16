@@ -1,0 +1,133 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import {
+	SITE_ADDRESS,
+	SITE_PHONE_DISPLAY,
+	SITE_PHONE_TEL,
+	SITE_TITLE,
+	SITE_ZALO_DISPLAY,
+	SITE_ZALO_URL,
+} from '../consts';
+
+const pageTitle = `Liên hệ & báo giá - ${SITE_TITLE}`;
+const pageDescription = `Gửi yêu cầu báo giá mua hoặc thuê giàn giáo, cây chống, vật tư xây dựng. Hotline ${SITE_PHONE_DISPLAY}, địa chỉ ${SITE_ADDRESS}.`;
+const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(SITE_ADDRESS)}&output=embed`;
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} />
+	</head>
+	<body class="bg-surface text-on-surface font-body-md font-sans">
+		<Header />
+		<main class="w-[90%] max-w-container-max mx-auto py-xl">
+			<div class="text-center mb-xl">
+				<h1 class="font-headline-lg text-headline-lg text-primary uppercase">Liên hệ &amp; nhận báo giá</h1>
+				<p class="font-body-md text-body-md text-on-surface-variant mt-sm max-w-2xl mx-auto">
+					Gọi trực tiếp để được báo giá nhanh nhất, hoặc để lại yêu cầu, chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-start">
+				<!-- Contact channels -->
+				<div class="space-y-md">
+					<a
+						href={`tel:${SITE_PHONE_TEL}`}
+						data-track="click_phone"
+						class="w-full cta-primary py-md px-lg text-headline-md font-bold text-center rounded-lg shadow-sm flex items-center justify-center gap-md"
+					>
+						<span class="material-symbols-outlined">call</span>
+						Gọi ngay {SITE_PHONE_DISPLAY}
+					</a>
+					<a
+						href={SITE_ZALO_URL}
+						target="_blank"
+						rel="noopener"
+						data-track="click_zalo"
+						class="w-full py-md px-lg text-headline-md font-bold text-center rounded-lg text-white bg-[#0068ff] shadow-sm flex items-center justify-center gap-md"
+					>
+						<span class="material-symbols-outlined">chat</span>
+						Nhắn Zalo {SITE_ZALO_DISPLAY}
+					</a>
+
+					<div class="bg-surface-container p-lg rounded-lg flat-technical-border space-y-sm">
+						<p class="flex items-center gap-sm text-on-surface-variant">
+							<span class="material-symbols-outlined text-secondary">location_on</span> {SITE_ADDRESS}
+						</p>
+						<div class="w-full h-56 bg-surface-container-highest border border-outline-variant overflow-hidden rounded">
+							<iframe
+								src={mapEmbedSrc}
+								class="w-full h-full border-0"
+								loading="lazy"
+								referrerpolicy="no-referrer-when-downgrade"
+								title={`Bản đồ ${SITE_ADDRESS}`}></iframe>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quote form. No backend: on submit it opens the visitor's SMS app
+				     prefilled to the hotline (mobile-first audience). Swap for a
+				     Cloudflare Worker / form service endpoint when email/CRM delivery is needed. -->
+				<form
+					id="quote-form"
+					class="bg-surface-container-high p-lg rounded-lg border border-outline-variant space-y-md"
+					data-phone={SITE_PHONE_TEL}
+				>
+					<h2 class="font-headline-md text-headline-md text-primary">Gửi yêu cầu báo giá</h2>
+					<div>
+						<label for="q-name" class="block font-label-bold mb-xs">Họ và tên</label>
+						<input id="q-name" name="name" type="text" required class="w-full p-sm border border-outline-variant rounded bg-surface" />
+					</div>
+					<div>
+						<label for="q-phone" class="block font-label-bold mb-xs">Số điện thoại</label>
+						<input id="q-phone" name="phone" type="tel" required class="w-full p-sm border border-outline-variant rounded bg-surface" />
+					</div>
+					<div>
+						<label for="q-type" class="block font-label-bold mb-xs">Nhu cầu</label>
+						<select id="q-type" name="type" class="w-full p-sm border border-outline-variant rounded bg-surface">
+							<option value="Mua">Mua vật tư</option>
+							<option value="Thuê">Thuê vật tư</option>
+							<option value="Tư vấn">Tư vấn số lượng</option>
+						</select>
+					</div>
+					<div>
+						<label for="q-message" class="block font-label-bold mb-xs">Nội dung (sản phẩm, số lượng, công trình)</label>
+						<textarea id="q-message" name="message" rows="4" class="w-full p-sm border border-outline-variant rounded bg-surface"></textarea>
+					</div>
+					<button
+						type="submit"
+						data-track="submit_quote"
+						class="w-full cta-primary py-md px-lg font-bold rounded-lg flex items-center justify-center gap-sm"
+					>
+						<span class="material-symbols-outlined">send</span>
+						Gửi yêu cầu
+					</button>
+					<p class="text-label-sm text-on-surface-variant text-center">
+						Hoặc gọi trực tiếp <a href={`tel:${SITE_PHONE_TEL}`} class="text-secondary font-bold">{SITE_PHONE_DISPLAY}</a> để được hỗ trợ ngay.
+					</p>
+				</form>
+			</div>
+		</main>
+		<Footer />
+
+		<script>
+			const form = document.getElementById('quote-form') as HTMLFormElement | null;
+			form?.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const phone = form.dataset.phone ?? '';
+				const data = new FormData(form);
+				const body = [
+					`Yeu cau bao gia (${data.get('type')})`,
+					`Ho ten: ${data.get('name')}`,
+					`SDT: ${data.get('phone')}`,
+					`Noi dung: ${data.get('message') || '(khong co)'}`,
+				].join('\n');
+				// `sms:` with body works on both iOS and Android; audience is mobile-first.
+				window.location.href = `sms:${phone}?&body=${encodeURIComponent(body)}`;
+			});
+		</script>
+	</body>
+</html>
